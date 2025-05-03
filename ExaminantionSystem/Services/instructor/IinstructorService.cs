@@ -6,6 +6,7 @@ namespace ExaminantionSystem.Services.instructor
     {
         void AddInstructor(InstructorDto instructorDto); 
         IEnumerable<InstructorDto> GetAllInstructors();
+        IEnumerable<ExamDto> GetById(int id);
         void UpdateInstructor(InstructorDto instructorDto);  
         void DeleteInstructor(int instructorId);  
 

@@ -15,10 +15,15 @@ namespace ExaminationSystem.Models
 
         public DateTime Birthdate { get; set; }
         public DateTime EnrollmentDate { get; set; }
-       public HashSet<Exam> Exams { get; set; }
+
+        public int Points { get; set; } = 0;
+        public HashSet<Exam> Exams { get; set; }
 
         public int UserId { get; set; }
 
         public User User { get; set; }
     }
+
+ 
+
 }

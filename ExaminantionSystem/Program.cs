@@ -6,6 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using ExaminantionSystem.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ServiceStack.Text;
+using ExaminantionSystem.middleware;
 namespace ExaminantionSystem
 {
     public class Program
@@ -24,7 +29,26 @@ namespace ExaminantionSystem
 
 
 
- 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                var jwtSettings = builder.Configuration.GetSection("JWT");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+                };
+            });
+
+
 
 
             // Add services to the container.
@@ -35,7 +59,11 @@ namespace ExaminantionSystem
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             MapperHelper.Mapper = app.Services.GetService<IMapper>();
+            app.UseMiddleware<GlobalErrorHandling>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -46,7 +74,7 @@ namespace ExaminantionSystem
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+             app.UseAuthorization();
  
             app.MapControllers();
 

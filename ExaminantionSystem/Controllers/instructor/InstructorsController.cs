@@ -19,6 +19,8 @@ public class InstructorController : ControllerBase
  
     }
 
+
+    
     [HttpGet]
     public ActionResult<IEnumerable<InstructorViewModel>> GetAll()
     {

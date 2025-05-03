@@ -25,9 +25,14 @@ namespace ExaminantionSystem.Profiles
                //.ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.CourseId))
                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.InstructorId));
 
-            CreateMap<ExamDto, Exam>()
-               .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.ExamId));
-
+            CreateMap<ExamDto, Exam>().ReverseMap()
+               .ForMember(dest => dest.ExamId, opt => opt.MapFrom(src => src.ID))
+               .ForMember(dest => dest.InstructorId, opt => opt.MapFrom(src => src.ID))
+               .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.ID));
+             CreateMap<ExamDto, ExamViewModel>().ReverseMap()
+               .ForMember(dest => dest.ExamId, opt => opt.MapFrom(src => src.ExamId))
+             .ForMember(dest => dest.InstructorId, opt => opt.MapFrom(src => src.InstructorId))
+               .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId));
             CreateMap<QuestionDto, Question>()
                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.QuestionId));
              

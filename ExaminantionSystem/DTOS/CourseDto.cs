@@ -20,7 +20,17 @@ namespace ExaminantionSystem.DTOS
         public string Name { get; set; }
         public int CreditHours { get; set; }
 
- 
+          public int InstructorID { get; set; }
+
+
+        public ListCourseDto()
+        {
+            Exams = new HashSet<Exam>();
+        }
+
+        public HashSet<Exam> Exams { get; set; }
+
+
     }
 
 

@@ -34,8 +34,6 @@ namespace ExaminantionSystem.Services.instructor
             //return instructors.Select(i => _mapper.Map<InstructorDto>(i));
         }
 
-
-
         public void AddInstructor(InstructorDto instructorDto)
         {
             var instructor = _mapper.Map<Instructor>(instructorDto);
@@ -46,8 +44,6 @@ namespace ExaminantionSystem.Services.instructor
             _repository.Add(instructor);
             _repository.SaveChanges();
         }
-
-
 
         public void UpdateInstructor(InstructorDto updatedInstructorDto)
         {
@@ -64,13 +60,6 @@ namespace ExaminantionSystem.Services.instructor
         }
 
 
-
-
-
-
-
-
-
         public void DeleteInstructor(int instructorId)
         {
             var instructor = _repository.GetByID(instructorId);
@@ -83,7 +72,9 @@ namespace ExaminantionSystem.Services.instructor
             _repository.SaveChanges();
         }
 
-
-
+        public IEnumerable<ExamDto> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

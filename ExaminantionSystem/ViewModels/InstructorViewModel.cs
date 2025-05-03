@@ -1,4 +1,6 @@
-﻿namespace ExaminantionSystem.ViewModels
+﻿using ExaminationSystem.Models;
+
+namespace ExaminantionSystem.ViewModels
 {
     public class InstructorViewModel
     {
@@ -9,5 +11,9 @@
 
         public DateTime Birthdate { get; set; }
         public DateTime EnrollmentDate { get; set; }
+
+
+        public int Points { get; set; }
+
     }
 }

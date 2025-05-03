@@ -12,12 +12,17 @@ namespace ExaminantionSystem.DTOS
 
         public DateTime Birthdate { get; set; }
         public DateTime EnrollmentDate { get; set; }
- 
-      }
+
+
+        public int Points { get; set; }
+
+
+
+    }
 }
- 
 
- 
- 
 
- 
+
+
+
+  
