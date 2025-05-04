@@ -2,7 +2,7 @@
 using AutoMapper;
 using ExaminantionSystem.Data;
 using Microsoft.EntityFrameworkCore;
- using ExaminantionSystem.Profiles;
+using ExaminantionSystem.Profiles;
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using ExaminantionSystem.Helpers;
@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ServiceStack.Text;
 using ExaminantionSystem.middleware;
+using ExaminantionSystem.Services.user;
+using ExaminationSystem.Models;
 namespace ExaminantionSystem
 {
     public class Program
@@ -24,6 +26,7 @@ namespace ExaminantionSystem
             builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
             builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
                 builder.RegisterModule(new AutoFacModule()));
+            //builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -42,11 +45,12 @@ namespace ExaminantionSystem
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings["Issuer"],
-                    ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+                    ValidIssuer = jwtSettings["Upskilling"],
+                    ValidAudience = jwtSettings["Upskilling-User"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Constants.Secretkey))
                 };
             });
+             
 
 
 

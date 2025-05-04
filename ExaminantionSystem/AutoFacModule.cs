@@ -14,7 +14,7 @@ namespace ExaminantionSystem
         {
             builder.RegisterGeneric(typeof(Repository<>)).As(typeof(IRepository<>)).InstancePerLifetimeScope();
             builder.RegisterType<Context>().InstancePerLifetimeScope();
-            builder.RegisterAssemblyTypes(typeof(ILoginUserServices).Assembly).AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterAssemblyTypes(typeof(IAuthorizeServices).Assembly).AsImplementedInterfaces().InstancePerLifetimeScope();
         }
     }
 }
