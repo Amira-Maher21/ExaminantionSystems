@@ -84,19 +84,5 @@ public class InstructorController : ControllerBase
 
 
 
-    //[HttpGet]
-    //public ActionResult<IEnumerable<InstructorViewModel>> GetAll()
-    //{
-    //    var instructors = _instructorService.GetAllInstructors()
-    //        .Select(MapInstructorToViewModel);
-
-    //    return Ok(instructors);
-    //}
-
-    //private InstructorViewModel MapInstructorToViewModel(InstructorDto instructorDto)
-    //{
-    //    return instructorDto.MapOne<InstructorViewModel>();
-    //}
-
-
+   
 }

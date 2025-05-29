@@ -2,9 +2,9 @@
 {
     public class RoleFeature : BaseModel
     {
-        public int AuthorizeRoleID { get; set; }
+        public Feature feature { get; set; }
 
-        public Feature Feature { get; set; }
+        public int AuthorizeRoleID { get; set; }
         public AuthorizeRole Role { get; set; }
     }
 }

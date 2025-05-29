@@ -19,5 +19,6 @@ namespace ExaminationSystem.Repositories
         T First(Expression<Func<T, bool>> predicate);
 
         void SaveChanges();
+       // IDisposable BeginTransaction();
     }
 }

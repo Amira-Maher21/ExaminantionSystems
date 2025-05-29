@@ -6,6 +6,8 @@ using ExaminationSystem.Exceptions;
 using ExaminationSystem.Models;
 using ExaminationSystem.Repositories;
 using ExaminationSystem.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,7 +27,7 @@ namespace ExaminantionSystem.Services.user
 
         public AuthorizeServices(
             IRepository<User> repository,
-            IRepository<AuthorizeRole> roleRepository,
+             IRepository<AuthorizeRole> roleRepository,
             IMapper mapper,
             IConfiguration configuration)
         {
@@ -38,10 +40,8 @@ namespace ExaminantionSystem.Services.user
 
 
 
-
         public ResultViewModel<string> AddUser(RegisterDto registerDto)
         {
-            // 1. التحقق من تكرار اسم المستخدم
             var existingUser = repository.GetAll().FirstOrDefault(u => u.UserName == registerDto.UserName);
             if (existingUser != null)
                 return ResultViewModel<string>.Faliure(ErrorCode.Duplicated, "Username already exists");
@@ -49,92 +49,56 @@ namespace ExaminantionSystem.Services.user
             if (string.IsNullOrWhiteSpace(registerDto.Name) || string.IsNullOrWhiteSpace(registerDto.Password))
                 return ResultViewModel<string>.Faliure(ErrorCode.ValidationError, "Username and password are required");
 
-            // 2. التحقق من صحة البيانات
-            if (string.IsNullOrWhiteSpace(registerDto.UserName) || string.IsNullOrWhiteSpace(registerDto.Password))
-                return ResultViewModel<string>.Faliure(ErrorCode.ValidationError, "Username and password are required");
-
-            
-            // 3. تشفير كلمة المرور
-            string hashedPassword = PasswordHasher.Hash(registerDto.Password);
-
-            // 4. جلب الدور
             var role = _roleRepository.GetAll().FirstOrDefault(r => r.Name.ToLower() == registerDto.Role.ToLower());
             if (role == null)
                 return ResultViewModel<string>.Faliure(ErrorCode.NotFound, "Role not found");
 
-            // 5. إنشاء المستخدم
-            // 5. إنشاء المستخدم
             var user = new User
             {
-                Name = registerDto.Name, // ← صحّحي هذا السطر
+                Name = registerDto.Name,
                 UserName = registerDto.UserName,
-                Password = hashedPassword,
                 AuthorizeRoleID = role.ID
             };
 
+            // ✅ استخدمي Identity PasswordHasher
+            var passwordHasher = new PasswordHasher<User>();
+            user.Password = passwordHasher.HashPassword(user, registerDto.Password);
 
-            // 6. حفظ في قاعدة البيانات
             repository.Add(user);
             repository.SaveChanges();
 
             return ResultViewModel<string>.Sucess("User registered successfully");
         }
 
-
-
         public ResultViewModel<string> Login(LoginUserDto loginUserDto)
         {
-            // 1. البحث عن المستخدم بالاسم
-            var user = repository.GetAll().FirstOrDefault(u => u.UserName == loginUserDto.UserName );
+            var user = repository.GetAll()
+                                 .Include(u => u.AuthorizeRole)
+                                 .FirstOrDefault(u => u.UserName == loginUserDto.UserName);
 
             if (user == null)
-                return ResultViewModel<string>.Faliure(ExaminationSystem.Exceptions.ErrorCode.NotFound, "User not found");
+                return ResultViewModel<string>.Faliure(ErrorCode.NotFound, "User not found");
 
-            // 2. مقارنة كلمة السر (يفضل تشفيرها في الخطوات الجاية)
-            if (!PasswordHasher.Verify(loginUserDto.Password, user.Password))
+            var passwordHasher = new PasswordHasher<object>();
+            var verificationResult = passwordHasher.VerifyHashedPassword(null, user.Password, loginUserDto.Password);
+
+            if (verificationResult != PasswordVerificationResult.Success)
                 return ResultViewModel<string>.Faliure(ErrorCode.ValidationError, "Invalid password");
 
-            // 3. تجهيز claims
-            var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.Role, user.AuthorizeRole?.Name ?? "User")
-    };
+            // تحويل الـ User إلى TokenDto باستخدام AutoMapper
+            var tokenDto = MapperHelper.Mapper.Map<TokenDto>(user);
 
-            // 4. إنشاء المفتاح السري (يفضل تيجي من appsettings)
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"])
-            );
+            // توليد JWT باستخدام TokenDto والاعدادات
+            var jwt = TokenGenerator.GenerateToken(tokenDto, _configuration);
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: creds
-            );
-
-
-            string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return ResultViewModel<string>.Sucess(tokenString, "Login successful");
+            return ResultViewModel<string>.Sucess(jwt, "Login successful");
         }
 
+
+
+
+
+
     }
-    //  "password": "1999amiraa2@maher",
 
-
-    //public ResultViewModel<string> Login(LoginUserDto loginUserDto)
-    //{
-    //    //Validate LoginUserDto
-
-
-    //    // generate token
-
-    //    var tokenHandler= new JwtSecurityTokenHandler();
-    //    throw new NotImplementedException();
-    //}
 }

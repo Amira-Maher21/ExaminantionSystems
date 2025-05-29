@@ -3,6 +3,7 @@ using ExaminantionSystem.Helpers;
 using ExaminantionSystem.Services.Exams;
 using ExaminantionSystem.Services.instructor;
 using ExaminantionSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,9 @@ namespace ExaminantionSystem.Controllers.Examss
               _examService = examService;
 
         }
+        
 
+        [Authorize]
         [HttpGet]
         public ActionResult<IEnumerable<ExamViewModel>> GetAll()
         {

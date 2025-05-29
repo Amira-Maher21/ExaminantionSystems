@@ -9,10 +9,35 @@ namespace ExaminantionSystem.Profiles
     {
         public MappingProfile()
         {
-            CreateMap<LoginUserDto, User>()
-               .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.UsersID))
-               .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.AuthorizeRolesID));
-            // .ForAllOtherMembers(opts => opts.Ignore());
+ 
+                // خريطة من User إلى TokenDto
+                CreateMap<User, TokenDto>()
+                    .ForMember(dest => dest.UsersID, opt => opt.MapFrom(src => src.ID))
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                    .ForMember(dest => dest.AuthorizeRoleName, opt => opt.MapFrom(src => src.AuthorizeRole.Name));
+
+                // خريطة LoginUserDto إلى User (إذا تحتاجها في مكان آخر)
+                CreateMap<LoginUserDto, User>()
+                    .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.UsersID))
+                    .ForMember(dest => dest.AuthorizeRoleID, opt => opt.MapFrom(src => src.AuthorizeRolesID))
+                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                    .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
+
+            CreateMap<AddauthorizeRoleDto, AuthorizeRole>()
+                              .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.AuthorizeRoleID))
+                             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.RoleName));
+
+
+            CreateMap<AssignFeaturesToRoleDto, RoleFeature>()
+           .ForMember(dest => dest.AuthorizeRoleID, opt => opt.MapFrom(src => src.RoleId))
+           .ForMember(dest => dest.feature, opt => opt.MapFrom(src => src.FeatureIds))
+           .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.RoleId));
+ 
+
+            //CreateMap<LoginUserDto, User>()
+            //           .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.UsersID))
+            //           .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.AuthorizeRolesID));
+            //        // .ForAllOtherMembers(opts => opts.Ignore());
 
 
             CreateMap<InstructorDto,Instructor>().ReverseMap()

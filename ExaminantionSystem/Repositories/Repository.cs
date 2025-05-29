@@ -116,6 +116,9 @@ namespace ExaminationSystem.Repositories
             _context.SaveChanges();
         }
 
-        
+        public IDisposable BeginTransaction()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
